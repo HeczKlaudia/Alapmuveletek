@@ -279,36 +279,50 @@ public class Muveletek extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+String mentettFajl;
     private void mnuFajlMentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFajlMentActionPerformed
-        JFileChooser fc = new JFileChooser();
-        fc.setDialogTitle("Fájl mentése");
-        fc.setCurrentDirectory(new File("."));
-        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-        int valasztottGombErteke = fc.showSaveDialog(this);
-        if (valasztottGombErteke == JFileChooser.APPROVE_OPTION) {
-            File f = fc.getSelectedFile();
-            if (f.isDirectory()) {
-                lblEredmeny.setText("<html>Elérés: " + f.getPath() + "<br>Könyvtár: " + f.getName() + "</html>");
-                try {
-                    Files.write(Paths.get(f.getPath(), "stat.txt"), "Statisztika: ".getBytes());
-                } catch (IOException ex) {
-                    Logger.getLogger(Muveletek.class.getName()).log(Level.SEVERE, null, ex);
-                }
+//        JFileChooser fc = new JFileChooser();
+//        fc.setDialogTitle("Fájl mentése");
+//        fc.setCurrentDirectory(new File("."));
+//        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+//
+//        int valasztottGombErteke = fc.showSaveDialog(this);
+//        if (valasztottGombErteke == JFileChooser.APPROVE_OPTION) {
+//            File f = fc.getSelectedFile();
+//            if (f.isDirectory()) {
+//                lblEredmeny.setText("<html>Elérés: " + f.getPath() + "<br>Könyvtár: " + f.getName() + "</html>");
+//                try {
+//                    Files.write(Paths.get(f.getPath(), "stat.txt"), "Statisztika: ".getBytes());
+//                } catch (IOException ex) {
+//                    Logger.getLogger(Muveletek.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
+//        }
+        if (mentettFajl == null) { // még nincs mentett fájl
+            mnuFajlMentesMaskentActionPerformed(evt); //1. mentésnél nevet kell adni, és helyet kell választani.
+        } else {
+            // ez írja ki
+            try {
+                // menteni a meglévő helyen és helyre
+                Files.write(Paths.get(mentettFajl), "Statisztika mentve: ".getBytes());
+            } catch (IOException ex) {
+                Logger.getLogger(Muveletek.class.getName()).log(Level.SEVERE, null, ex);
             }
+            // ez írja ki vége
         }
     }//GEN-LAST:event_mnuFajlMentActionPerformed
 
     private void mnuFajlMentesMaskentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFajlMentesMaskentActionPerformed
+        // név és hely választása
         JFileChooser fc = new JFileChooser(new File("."));
         fc.setDialogTitle("Mentés másként");
-        
+
         /* választható fájltípusok */
         fc.setAcceptAllFileFilterUsed(false);
 
         FileNameExtensionFilter filterImg = new FileNameExtensionFilter("PNG és GIF képek", "png", "gif");
         fc.addChoosableFileFilter(filterImg);
-        
+
         FileNameExtensionFilter filterNev = new FileNameExtensionFilter("Saját (*.hk)", "hk");
         fc.addChoosableFileFilter(filterNev);
 
@@ -316,7 +330,7 @@ public class Muveletek extends javax.swing.JFrame {
         fc.addChoosableFileFilter(filterTxt);
 
         fc.setFileFilter(filterTxt);
-        
+
         /* Tesztesetek:
             - kiterjesztés megváltoztatása
             - olyan kiterjesztés írása, ami nincs a listában
@@ -324,20 +338,22 @@ public class Muveletek extends javax.swing.JFrame {
             - másik mappa kiválasztása
             - ha létezik a fájl akkor kérdés nélkül felülírja
             - ha kiterjesztéssel választoma  meglévő fájlt, akkor megint mögé rakja a kiterjesztést
-        */
+         */
         
         int valasztottGombErteke = fc.showSaveDialog(this);
         if (valasztottGombErteke == JFileChooser.APPROVE_OPTION) {
             File f = fc.getSelectedFile();
             String[] kit = ((FileNameExtensionFilter) fc.getFileFilter()).getExtensions();
             String fn = f.getPath();
-            
+
             /* csak egyszer rakja mögé a kiterjesztést */
             if (fn.endsWith("." + kit[0])) {
                 fn += "." + kit[0];
             }
-            
+
             boolean mentes = true;
+            mentettFajl = fn;
+            
             /* ha már létezik */
             Path path = Paths.get(fn);
             if (Files.exists(path)) {
@@ -346,10 +362,14 @@ public class Muveletek extends javax.swing.JFrame {
                     mentes = false;
                 }
             }
-            
+
             lblEredmeny.setText("<html>Elérés: " + f.getPath() + "<br>Fájl neve: " + f.getName() + "</html>");
+            
+            // ez felelős a mentésért (try-catch)
             try {
-                Files.write(path, "Statisztika: ".getBytes());         
+                if (mentes) {
+                    Files.write(path, "Statisztika: ".getBytes());
+                }
             } catch (IOException ex) {
                 Logger.getLogger(Muveletek.class.getName()).log(Level.SEVERE, null, ex);
             }
