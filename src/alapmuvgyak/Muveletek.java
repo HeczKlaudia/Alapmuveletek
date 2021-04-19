@@ -1,7 +1,6 @@
 package alapmuvgyak;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -202,6 +201,11 @@ public class Muveletek extends javax.swing.JFrame {
         mnuFajl.setText("Fájl");
 
         mnuFajlMegnyit.setText("Megnyit");
+        mnuFajlMegnyit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuFajlMegnyitActionPerformed(evt);
+            }
+        });
         mnuFajl.add(mnuFajlMegnyit);
 
         mnuFajlMent.setText("Ment");
@@ -377,6 +381,33 @@ String mentettFajl;
             JOptionPane.showConfirmDialog(this, "Mentés megszakítva!", "NINCS MENTÉS", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_mnuFajlMentesMaskentActionPerformed
+
+    private void mnuFajlMegnyitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFajlMegnyitActionPerformed
+        JFileChooser fc = new JFileChooser(new File("."));
+        fc.setDialogTitle("Mentés megnyitása");
+
+        /* választható fájltípusok */
+        fc.setAcceptAllFileFilterUsed(false);
+
+        FileNameExtensionFilter filterImg = new FileNameExtensionFilter("PNG és GIF képek", "png", "gif");
+        fc.addChoosableFileFilter(filterImg);
+
+        FileNameExtensionFilter filterNev = new FileNameExtensionFilter("Saját (*.hk)", "hk");
+        fc.addChoosableFileFilter(filterNev);
+
+        FileNameExtensionFilter filterTxt = new FileNameExtensionFilter("Szöveg (*.txt)", "txt");
+        fc.addChoosableFileFilter(filterTxt);
+
+        fc.setFileFilter(filterTxt);
+        int valasztottGombErteke = fc.showOpenDialog(this);
+        if (valasztottGombErteke == JFileChooser.APPROVE_OPTION) {
+            File f = fc.getSelectedFile();
+            String fn = f.getPath();
+            lblEredmeny.setText("<html>Elérés: " + fn + "<br>Fájl neve: " + f.getName() + "</html>");
+        } else {
+            JOptionPane.showConfirmDialog(this, "Megnyitás megszakítva!", "NINCS MEGNYITÁS", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_mnuFajlMegnyitActionPerformed
 
     /**
      * @param args the command line arguments
