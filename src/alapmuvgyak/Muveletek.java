@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -283,7 +284,7 @@ public class Muveletek extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-String mentettFajl;
+    String mentettFajl;
     private void mnuFajlMentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFajlMentActionPerformed
 //        JFileChooser fc = new JFileChooser();
 //        fc.setDialogTitle("Fájl mentése");
@@ -308,7 +309,7 @@ String mentettFajl;
             // ez írja ki
             try {
                 // menteni a meglévő helyen és helyre
-                Files.write(Paths.get(mentettFajl), "Statisztika mentve: ".getBytes());
+                Files.write(Paths.get(mentettFajl), tartalomOsszeallitasa().getBytes());
             } catch (IOException ex) {
                 Logger.getLogger(Muveletek.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -343,7 +344,6 @@ String mentettFajl;
             - ha létezik a fájl akkor kérdés nélkül felülírja
             - ha kiterjesztéssel választoma  meglévő fájlt, akkor megint mögé rakja a kiterjesztést
          */
-        
         int valasztottGombErteke = fc.showSaveDialog(this);
         if (valasztottGombErteke == JFileChooser.APPROVE_OPTION) {
             File f = fc.getSelectedFile();
@@ -357,7 +357,7 @@ String mentettFajl;
 
             boolean mentes = true;
             mentettFajl = fn;
-            
+
             /* ha már létezik */
             Path path = Paths.get(fn);
             if (Files.exists(path)) {
@@ -368,11 +368,11 @@ String mentettFajl;
             }
 
             lblEredmeny.setText("<html>Elérés: " + f.getPath() + "<br>Fájl neve: " + f.getName() + "</html>");
-            
+
             // ez felelős a mentésért (try-catch)
             try {
                 if (mentes) {
-                    Files.write(path, "Statisztika: ".getBytes());
+                    Files.write(path, tartalomOsszeallitasa().getBytes());
                 }
             } catch (IOException ex) {
                 Logger.getLogger(Muveletek.class.getName()).log(Level.SEVERE, null, ex);
@@ -481,4 +481,30 @@ String mentettFajl;
     private javax.swing.JPanel pnlGyakorlas;
     private javax.swing.JTextField txtEredmeny;
     // End of variables declaration//GEN-END:variables
+
+    private String tartalomOsszeallitasa() {
+        String statisztika = "Az alapműveletek gyakoroltatása:\n";
+
+        JLabel[] lblTomb = new JLabel[]{lblOsszKerdes, lbllblOsszProba, lblOsszeadKerdes, lblOsszeadProba, lblKivonasKerdes, lblKivonasProba, lblOsztasKerdes, lblOsztasProba, lblSzorzasKerdes, lblSzorzasProba};
+
+        final int HE = 3; //Helyi érték 3 helyen
+        final int KERDES_MAX_HOSSZ = lblTomb[0].getText().length();
+        final int PROBA_MAX_HOSSZ = lblTomb[1].getText().length();
+
+        for (int i = 0; i < lblTomb.length - 1; i += 2) {
+            JLabel lblKerdes = lblTomb[i];
+            JLabel lblProba = lblTomb[i + 1];
+            String format = "%" + (KERDES_MAX_HOSSZ + HE) + "s%" + (PROBA_MAX_HOSSZ + HE) + "s\n";
+            statisztika += String.format(format, lblKerdes.getText(), lblProba.getText());
+//            statisztika += lblKerdes.getText() + "\t";           
+//            statisztika += lblProba.getText() + "\n";
+        }
+
+//        for (JLabel lbl: lblTomb) {
+//            statisztika += lbl.getText() + "\n";
+//        }
+//        statisztika += lblOsszKerdes.getText() + "\n";
+//        statisztika += lbllblOsszProba.getText() + "\n";
+        return statisztika;
+    }
 }
